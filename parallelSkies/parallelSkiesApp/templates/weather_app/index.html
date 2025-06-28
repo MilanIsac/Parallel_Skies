@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Parallel Skies - Weather Comparison</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+    <div class="container">
+        <h1 id="typing-title"></h1>
+
+        <form method="post" class="weather-form">
+            {% csrf_token %}
+            <div class="input-group">
+                <div class="input-box">
+                    {{ form.city1.label_tag }}
+                    <!-- <br> -->
+                    {{ form.city1 }}
+                </div>
+                <div class="input-box">
+                    {{ form.city2.label_tag }}
+                    <!-- <br> -->
+                    {{ form.city2 }}
+                </div>
+                <!-- <br> -->
+            </div>
+            <div class="submit-box">
+                <button type="submit">Compare</button>
+            </div>
+        </form>
+
+        {% if weather_data %}
+        <div class="results-container">
+            <div class="card-container">
+                {% for weather in weather_data %}
+                <div class="weather-card">
+                    <h2>{{ weather.city }}</h2>
+                    {% if weather.error %}
+                    <p class="text-danger">{{ weather.error }}</p>
+                    {% else %}
+                    <img src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png" alt="icon">
+                    <p><strong>{{ weather.description }}</strong></p>
+                    <p>Temperature: {{ weather.temperature }}°C</p>
+                    <p>Humidity: {{ weather.humidity }}%</p>
+                    <p>Feels Like: {{ weather.feels_like }}°C</p>
+                    <p>Wind Speed: {{ weather.wind_speed }}%</p>
+                    {% if forloop.counter0 == 0 and pred1 %}
+                    <p><strong>Tomorrow's Predicted Temp:</strong></p> {{ pred1 }} °C
+                    {% elif forloop.counter0 == 1 and pred2 %}
+                    <p><strong>Tomorrow's Predicted Temp:</strong></p> {{ pred2 }} °C
+                    {% endif %}
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if plot_div %}
+            <div class="chart-container">
+                {{ plot_div|safe }}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- {% if predictions %}
+        <div class="predictions mt-4">
+            <h3>ML Temperature Predictions</h3>
+            <ul>
+                {% for city, temp in predictions.items %}
+                <li><strong>{{ city }}:</strong> {{ temp }} °C</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %} -->
+
+
+        <script src="{% static 'js/script.js' %}"></script>
+
+    </div>
+</body>
+
+</html>
